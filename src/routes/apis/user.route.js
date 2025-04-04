@@ -1,16 +1,10 @@
 import express from 'express'
-import DbHelper from '../../helpers/DbHelper.js'
+import userController from '../../controllers/user.controller.js'
+import { ValidateUserId } from '../../middlewares/user.validate.js'
 const router = express.Router()
 
 router.route('/')
-    .get( async (req, res) => {
-        try {
-            const db = await DbHelper.readDb()
-            return res.status(200).json( db.User )
-        } catch (error) {
-            return res.status(500).json("error : ", error )
-        }
-    })
+    .get( userController.GetAll )
     .post( async (req, res) => {
         try {
             const db = await DbHelper.readDb()
@@ -24,20 +18,7 @@ router.route('/')
     })
 
 router.route('/:id')
-    .get( async (req, res) => {
-        try {
-            const db = await DbHelper.readDb()
-            const id = parseInt( req.params.id )
-            const index = db.User.findIndex( (user) => user.id === id )
-            if ( index !== -1 ) {
-                return res.status(200).json( db.User[index] )
-            } else {
-                return res.status(404).json("Not Found")
-            }
-        } catch (error) {
-            return res.status(500).json("error : ", error )
-        }
-    })
+    .get( ValidateUserId, userController.GetById )
     .put( async (req, res) => {
         try {
             const db = await DbHelper.readDb()
