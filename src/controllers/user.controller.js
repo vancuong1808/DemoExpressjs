@@ -3,9 +3,7 @@ import userService from "../services/user.service.js"
 const GetAll = async( req, res, next ) => {
     try {
         const users = await userService.GetAll()
-        return res.status(200).json({
-            data : users
-        })
+        return res.render('home', { users : users })
     } catch (error) {
         next( error )
     }
