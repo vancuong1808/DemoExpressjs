@@ -4,7 +4,7 @@ class UserController {
   async GetAll(req, res, next) {
     try {
       const users = await userService.GetAll()
-      return res.render('home', { users })
+      return res.status(200).json({ data: users })
     } catch (error) {
       next(error)
     }
