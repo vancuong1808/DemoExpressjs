@@ -1,56 +1,48 @@
-import DbHelper from '../helpers/DbHelper.js'
+import mongoInstance from '../configs/mongodb.config.js'
+import { ObjectId } from 'mongodb'
 
-const GetAll = async() => {
-    const db = await DbHelper.readDb()
-    return db.User
-}
+class UserService {
+  constructor() {
+    this.collection = null
+  }
 
-const GetById = async(id) => {
-    const db = await DbHelper.readDb()
-    const index = db.User.findIndex( (user) => user.id === id )
-    if ( index === -1 ) {
-        throw new Error("Not Found")
+  async init() {
+    if (!this.collection) {
+      const db = await mongoInstance.connect()
+      this.collection = db.collection('collection')
     }
-    return db.User[index]
+  }
+
+  async GetAll() {
+    await this.init()
+    return this.collection.find().toArray()
+  }
+
+  async GetById(id) {
+    await this.init()
+    return this.collection.findOne({ _id: new ObjectId(id) })
+  }
+
+  async Create(user) {
+    await this.init()
+    const result = await this.collection.insertOne(user)
+    return await this.collection.findOne({ _id: result.insertedId })
+  }
+
+  async Update(id, user) {
+    await this.init()
+    const result = await this.collection.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: user }
+    )
+    return result
+  }
+
+  async Delete(id) {
+    await this.init()
+    const result = await this.collection.deleteOne({ _id: new ObjectId(id) })
+    return result.deletedCount > 0
+  }
 }
 
-const Create = async(user) => {
-    const db = await DbHelper.readDb()
-    db.User.push( user )
-    await DbHelper.writeDb( db )
-    const index = db.User.findIndex( (user) => user.id === user.id )
-    if ( index === -1 ) {
-        throw new Error("Not Found")
-    }
-    return db.User[index]
-}
-
-const Update = async(id, user) => {
-    const db = await DbHelper.readDb()
-    const index = db.User.findIndex( (user) => user.id === id )
-    if ( index === -1 ) {
-        throw new Error("Not Found")
-    }
-    db.User[index] = { ...db.User[index], ...user }
-    await DbHelper.writeDb( db )
-    return db.User[index]
-}
-
-const Delete = async(id) => {
-    const db = await DbHelper.readDb()
-    const index = db.User.findIndex( (user) => user.id === id )
-    if ( index === -1 ) {
-        throw new Error("Not Found")
-    }
-    db.User.splice(index, 1)
-    await DbHelper.writeDb( db )
-    return true
-}
-
-export default {
-    GetAll,
-    GetById,
-    Create,
-    Update,
-    Delete
-}
+export default new UserService()

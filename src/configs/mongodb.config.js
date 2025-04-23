@@ -4,48 +4,51 @@ dotenv.config()
 
 const uri = process.env.MONGODB_URI
 const dbName = process.env.MONGODB_DBNAME
-if(!uri || !dbName) {
-    throw new Error("MongoDB URI or DB name not provided in .env file");
-}
-const client = new MongoClient(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
 
-async function connectDB() {
+class MongoDB {
+  constructor() {
+    this.client = null
+    this.db = null
+  }
+
+  async connect() {
     try {
-        await client.connect()
-        console.log("Connected to MongoDB")
-        return client.db(dbName)
+        if (!this.client) {
+            this.client = new MongoClient(uri, {
+              useNewUrlParser: true,
+              useUnifiedTopology: true
+            })
+      
+            await this.client.connect()
+            console.log("MongoDB connected")
+            this.db = this.client.db(dbName)
+          }
+          return this.db
     } catch (error) {
         console.error("Error connecting to MongoDB", error)
         throw error
     }
-}
+  }
 
-async function getDB() {
+  async getDB() {
     try {
-        const db = await connectDB()
-        return db
+        this.db = await connect()
+        return this.db
     } catch (error) {
         console.error("Error getting MongoDB instance", error)
         throw error
     }
-}
+  }
 
-async function closeDB() {
-    try {
-        await client.close()
-        console.log("MongoDB connection closed")
-    } catch (error) {
-        console.error("Error closing MongoDB connection", error)
-        throw error
+  async close() {
+    if (this.client) {
+      await this.client.close()
+      this.client = null
+      this.db = null
+      console.log("MongoDB connection closed")
     }
+  }
 }
 
-
-export default {
-    connectDB,
-    getDB,
-    closeDB
-}
+const mongoInstance = new MongoDB()
+export default mongoInstance
