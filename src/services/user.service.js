@@ -7,6 +7,7 @@ class UserService {
   }
 
   async GetAll() {
+    const user = this.user.find();
   }
 
   async GetById(id) {
