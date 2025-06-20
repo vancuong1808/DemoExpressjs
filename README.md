@@ -19,30 +19,35 @@
 - Lệnh docker build này với __tag_name__ tên image bạn tự đặt và sau __:__ là phiên bản image của bạn. __Nếu 0 để gì thì mặc định là latest__
  
 - Dấu . ở cuối là để chỉ rằng dockerfile đang ở cùng chỗ chúng ta viết bash command. Nếu không hãy chỉ rõ nơi chứa dockerfile để có thể build được 
-
-- __```bash docker build -t <tag_name:version> .```__
 <br>
+
+- ```bash
+    docker build -t <tag_name:version> .
 
 - Để thay đổi tag của docker sau khi đã build
-
-- __```bash docker tag <old_tag> <new_tag> ```__
 <br>
+
+- ```bash 
+    docker tag <old_tag> <new_tag>
 
 - Để tiện cho việc push lên dockerhub vì nó cần tên của __docker_name__ và __tag_name__ thì nên đặt __tag_name__ như sau:
-
-- __```bash docker build -t <dockerhub_name\tag_name:version> .```__
 <br>
+
+- ```bash 
+    docker build -t <dockerhub_name/>tag_name:version> .
 
 - ví dụ:
-
-- __```bash docker build -t cunity1808\demoexpress:latest .```__
 <br>
+
+- ```bash 
+    docker build -t cunity1808/demoexpress:latest .
 
 ### Push Image
 - Lệnh docker push để đưa image chúng ta vừa build lên dockerhub. __Nhớ login vào docker desktop__
-
-- __```bash docker push cunity1808\demoexpress:latest ```__
 <br>
+
+- ```bash 
+    docker push cunity1808/demoexpress:latest
 
 ### Run Container
 - Lệnh docker run để nhằm việc chúng ta run container để chạy app trong __docker_host__.
@@ -56,9 +61,10 @@
 - Ví dụ: __3000:8000__ thì khi chúng ta truy cập __localhost:3000__ ở bên ngoài mới thực sự vào server nodejs với __localhost:8000__.
 
 - Vì localhost của máy mình và localhost của container trong docker là 2 thằng hoàn toàn khác nhau
-
-- __```bash docker run -d --name <container_name> -p <docker_host_port:container_post> cunity1808\demoexpress:latest```__
 <br>
+
+- ```bash 
+    docker run -d --name <container_name> -p <docker_host_port:container_post> cunity1808\demoexpress:latest
 
 - Sau khi chạy xong rồi thử ra chạy __localhost:<docker_host_port>__ để xem có chạy được chưa
 
@@ -66,19 +72,22 @@
 - Đây là thằng giúp chúng ta chạy được nhiều container cùng 1 lúc.
 
 - Lệnh này để chạy docker-compose từ file __docker-compose.yml__ đó
-
-- __```bash docker compose up -d```__
 <br>
+
+- ```bash 
+    docker compose up -d
 
 - Hoặc
-
-- __```bash docker-compose up -d```__
 <br>
+
+- ```bash 
+    docker-compose up -d
 
 - Lệnh này để ngừng chạy docker-compose đi
-
-- __```bash docker-compose down```__
 <br>
+
+- ```bash 
+    docker-compose down
 
 - Lưu ý: 
     - Các Container là hoàn toàn độc lập với nhau. Nếu muốn chúng nó liên kết với nhau hay connect tới các cổng với nhau thì cần phải setup chúng chung 1 network. Với __docker-compose__ thì mặc định chúng đã có chung 1 network là __bridge__ rồi còn để chắc chắn hay custom thì sửa lại phần network trong file __docker-compose.yml__ là được.
